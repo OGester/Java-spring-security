@@ -1,5 +1,7 @@
 package Spring.Security.restful.api.util;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -35,6 +37,39 @@ public class JwtUtil {
                 .compact();
     }
 
+
+    // validate token
+
+    public boolean validateToken(String token, UserDetails userDetails) {
+    try {
+        String username = extractUsername(token);
+            return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    } catch (JwtException | IllegalArgumentException e){
+        return false;
+        }
+    }
+
+
+    // extract username from token
+
+    public String extractUsername(String token) {
+       return extractAllClaims(token).getSubject();
+    }
+
+    // check if token is expired
+
+    public boolean isTokenExpired(String token) {
+        Date expiration = extractAllClaims(token).getExpiration();
+            return expiration.before(new Date());
+    }
+
+    public Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJwt(token)
+                .getBody();
+    }
 
 
 
