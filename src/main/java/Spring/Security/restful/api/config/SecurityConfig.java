@@ -63,7 +63,7 @@ public class SecurityConfig {
         // cors config
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
-            CorsConfiguration configuration = new CorsConfiguration()
+            CorsConfiguration configuration = new CorsConfiguration();
 
                     // allow access only from our own client
                     configuration.setAllowedOrigins(List.of("http://localhost:5050"));
