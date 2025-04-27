@@ -58,12 +58,12 @@ public class JwtUtil {
 
     // check if token is expired
 
-    public boolean isTokenExpired(String token) {
+    private boolean isTokenExpired(String token) {
         Date expiration = extractAllClaims(token).getExpiration();
             return expiration.before(new Date());
     }
 
-    public Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
