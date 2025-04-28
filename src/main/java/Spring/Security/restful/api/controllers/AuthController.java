@@ -97,10 +97,10 @@ public class AuthController {
             String jwt = jwtUtil.generateToken(userDetails);
             ResponseCookie jwtCookie = ResponseCookie.from("jwt", jwt)
                     .httpOnly(true)
-                    .secure(false) // OBS! => IMPORTANT => CHANGE TO TRUE IN PRODUCTION!
+                    .secure(false) //IMPORTANT TO CHANGE IN PRODUCTION TO TRUE
                     .path("/")
-                    .maxAge(10 * 60 * 60) // valid for 10hrs
-                    .sameSite("Strict")
+                    .maxAge(10 * 60 * 60) // valid for 10h
+                    .sameSite("Strict") // Lax & None
                     .build();
 
 
@@ -111,7 +111,6 @@ public class AuthController {
                     userService.findByUsername(userDetails.getUsername()).getRoles()
             );
 
-            // return the response with cookie-header and body
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                     .body(authResponse);
