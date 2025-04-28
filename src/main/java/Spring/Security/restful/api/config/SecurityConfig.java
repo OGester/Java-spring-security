@@ -1,5 +1,6 @@
 package Spring.Security.restful.api.config;
 
+
 import Spring.Security.restful.api.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,7 +58,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 // add Jwt filter before standard filter
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
                 return http.build();
         }
         // cors config
@@ -66,7 +67,7 @@ public class SecurityConfig {
             CorsConfiguration configuration = new CorsConfiguration();
 
                     // allow access only from our own client
-                    configuration.setAllowedOrigins(List.of("http://localhost:5050"));
+                    configuration.setAllowedOrigins(List.of("http://localhost:5173"));
                     configuration.setAllowedMethods(List.of("GET", "POST", "PUT","PATCH","DELETE", "OPTIONS"));
                     configuration.setExposedHeaders(List.of("*"));
                     configuration.setAllowCredentials(true);
