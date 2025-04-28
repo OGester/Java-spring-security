@@ -1,15 +1,25 @@
 package Spring.Security.restful.api.controllers;
 
+import Spring.Security.restful.api.dto.AuthRequest;
+import Spring.Security.restful.api.dto.AuthResponse;
 import Spring.Security.restful.api.dto.RegisterRequest;
 import Spring.Security.restful.api.dto.RegisterResponse;
 import Spring.Security.restful.api.models.Role;
 import Spring.Security.restful.api.models.User;
 import Spring.Security.restful.api.services.UserService;
 import Spring.Security.restful.api.util.JwtUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,9 +76,56 @@ public class AuthController {
 
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest authRequest, HttpServletResponse response) {
+
+        try {
+            // authenticating user
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authRequest.getUsername(),
+                            authRequest.getPassword()
+                    )
+            );
+            // set authentication in the security context
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // get UserDetails
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+            // generating JWT token
+            String jwt = jwtUtil.generateToken(userDetails);
+            ResponseCookie jwtCookie = ResponseCookie.from("jwt", jwt)
+                    .httpOnly(true)
+                    .secure(false) // OBS! => IMPORTANT => CHANGE TO TRUE IN PRODUCTION!
+                    .path("/")
+                    .maxAge(10 * 60 * 60) // valid for 10hrs
+                    .sameSite("Strict")
+                    .build();
 
 
+            // response object created
+            AuthResponse authResponse = new AuthResponse(
+                    "Login successful",
+                    userDetails.getUsername(),
+                    userService.findByUsername(userDetails.getUsername()).getRoles()
+            );
 
+            // return the response with cookie-header and body
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                    .body(authResponse);
+
+
+        } catch(AuthenticationException e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Incorrect username or password");
+
+        }
+
+
+    }
 
 
 
