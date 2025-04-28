@@ -111,6 +111,7 @@ public class AuthController {
                     userService.findByUsername(userDetails.getUsername()).getRoles()
             );
 
+            // returning response with cookie-header and body
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                     .body(authResponse);
