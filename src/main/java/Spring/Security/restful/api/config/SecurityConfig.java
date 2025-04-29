@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -39,7 +41,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-        // CORS configuration
+        // CORS config
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // CSRF, disable in dev
                 // OBS dont forget to enable in production!
@@ -48,11 +50,13 @@ public class SecurityConfig {
                 // URL rules based on endpoints
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("USER","ADMIN")
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/products/**").hasRole("ADMIN")
+                        .requestMatchers("/cache-stats/**").hasRole("ADMIN")
+                        .requestMatchers("/cache/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/products/**").permitAll()
-                        // any other requests require authentication
+                        .requestMatchers("/orders/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        // any other requests the user need to be logged
                         .anyRequest().authenticated()
                 )
                 // disable session due to Jwt statelessness
@@ -68,7 +72,7 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
             CorsConfiguration configuration = new CorsConfiguration();
 
-                    // allow access only from our own client
+                    // allow access only from our future react client
                     configuration.setAllowedOrigins(List.of("http://localhost:5173"));
                     configuration.setAllowedMethods(List.of("GET", "POST", "PUT","PATCH","DELETE", "OPTIONS"));
                     configuration.setExposedHeaders(List.of("*"));
