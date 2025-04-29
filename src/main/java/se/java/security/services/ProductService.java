@@ -1,5 +1,7 @@
 package se.java.security.services;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import se.java.security.exeptions.ResourceNotFoundException;
 import se.java.security.models.Product;
 import se.java.security.repository.ProductRepository;
@@ -16,7 +18,7 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-
+    @CacheEvict(value = "products", allEntries = true)
     public Product createProduct(Product product) {
         if(product.getName() == null || product.getName().isEmpty()) {
             throw new IllegalArgumentException("Product name cannot be empty! ");
@@ -27,17 +29,23 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+
+    @Cacheable(value = "products")
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
+
+    @Cacheable(value = "productById")
     public Optional<Product> getProductById(String id) {
         return productRepository.findById(id);
     }
 
     // update alternatives both PUT & PATCH
 
+
     //PUT
+    @CacheEvict(value = {"products", "productById"}, allEntries = true)
     public Product updateProduct(String id, Product product) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
@@ -50,10 +58,11 @@ public class ProductService {
     }
 
     //PATCH
+    @CacheEvict(value = {"products", "productById"}, allEntries = true)
     public Product patchProduct(String id, Product product) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
-
+        // only update fields that is !null
         if(product.getName() != null) {
             existingProduct.setName(product.getName());
         }
@@ -68,6 +77,8 @@ public class ProductService {
         return productRepository.save(existingProduct);
     }
 
+
+    @CacheEvict(value = {"products", "productById"}, allEntries = true)
     public void deleteProduct(String id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
