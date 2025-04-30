@@ -9,10 +9,11 @@ public class OrderResponseDTO {
     private String customerId;
     private double totalAmount;
     private List<OrderItemDTO> items;
-    private Map<String, String> quantities;
+   // private Map<String, String> quantities;
+   private Map<String, Integer> quantities;
     private String createdAt;
 
-    public OrderResponseDTO(String id, String customerId, double totalAmount, List<OrderItemDTO> items, Map<String, String> quantities, String createdAt) {
+    public OrderResponseDTO(String id, String customerId, double totalAmount, List<OrderItemDTO> items, Map<String, Integer> quantities, String createdAt) {
         this.id = id;
         this.customerId = customerId;
         this.totalAmount = totalAmount;
@@ -57,11 +58,11 @@ public class OrderResponseDTO {
         this.items = items;
     }
 
-    public Map<String, String> getQuantities() {
+    public Map<String, Integer> getQuantities() {
         return quantities;
     }
 
-    public void setQuantities(Map<String, String> quantities) {
+    public void setQuantities(Map<String, Integer> quantities) {
         this.quantities = quantities;
     }
 

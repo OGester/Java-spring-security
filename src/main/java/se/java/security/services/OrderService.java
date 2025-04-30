@@ -47,15 +47,15 @@ public class OrderService {
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // empty list
+        // tom lista
         List<Product> products = new ArrayList<>();
         Map<String, Integer> quantities = new HashMap<>();
         double totalAmount = 0.0;
 
-        // loop through all OrderItemDTOs in the Order
+        // gå igenom varenda orderrad (OrderItemDTO) i beställningen
         for (OrderItemDTO itemDTO : orderDTO.getItems()) {
             Product product = productRepository.findById(itemDTO.getProductId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Product is not found with id " + itemDTO.getProductId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Product not found with id " + itemDTO.getProductId()));
 
             products.add(product);
             quantities.put(itemDTO.getProductId(), itemDTO.getQuantity());
@@ -70,9 +70,9 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(newOrder);
 
-        //return orderRepository.save(newOrder);
         return convertToOrderResponseDTO(savedOrder);
     }
+
 
 
     public List<OrderResponse> getAllOrders() {
@@ -107,14 +107,15 @@ public class OrderService {
                     return new OrderItemDTO(productId, name, price, quantity);
                 })
                 .collect(Collectors.toList());
-
+        Map<String, Integer> quantities = new HashMap<>(order.getQuantities());
+/*
         Map<String, String> quantities = order.getQuantities().entrySet().stream()
                 .collect(Collectors.toMap(
                         entry -> entry.getKey(),
                         entry -> productRepository.findById(entry.getKey())
                                 .map(Product::getName)
                                 .orElse("Product not found")
-                ));
+                )); */
         return new OrderResponseDTO(
                 order.getId(),
                 order.getCustomer().getId(),

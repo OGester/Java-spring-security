@@ -22,6 +22,12 @@ public class UserService {
     // register user
     public void registerUser(User user) {
 
+        if(user.getUsername() == null || user.getUsername().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be empty!");
+        }
+        if(user.getPassword() == null || user.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty!");
+        }
         // hash password
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
