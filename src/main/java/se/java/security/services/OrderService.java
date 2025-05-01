@@ -108,14 +108,7 @@ public class OrderService {
                 })
                 .collect(Collectors.toList());
         Map<String, Integer> quantities = new HashMap<>(order.getQuantities());
-/*
-        Map<String, String> quantities = order.getQuantities().entrySet().stream()
-                .collect(Collectors.toMap(
-                        entry -> entry.getKey(),
-                        entry -> productRepository.findById(entry.getKey())
-                                .map(Product::getName)
-                                .orElse("Product not found")
-                )); */
+
         return new OrderResponseDTO(
                 order.getId(),
                 order.getCustomer().getId(),

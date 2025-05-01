@@ -2,15 +2,13 @@ package se.java.security.exeptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import se.java.security.dto.InvalidFieldError;
 
 import java.nio.file.AccessDeniedException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -19,20 +17,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
-        List<String> errorMessages = ex.getBindingResult()
-                .getFieldErrors()
+    public ResponseEntity<List<InvalidFieldError>> handleValidationException(MethodArgumentNotValidException ex) {
+        List<InvalidFieldError> errors = ex.getBindingResult().getFieldErrors()
                 .stream()
-                .map(FieldError::getDefaultMessage)
+                .map(err -> new InvalidFieldError(err.getField(), err.getDefaultMessage()))
                 .collect(Collectors.toList());
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("errors", errorMessages);
+        return ResponseEntity.badRequest().body(errors);
 
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
-
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {

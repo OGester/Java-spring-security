@@ -41,8 +41,6 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
-    // update alternatives both PUT & PATCH
-
 
     //PUT
     @CacheEvict(value = {"products", "productById"}, allEntries = true)

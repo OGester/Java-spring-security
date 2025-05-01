@@ -1,7 +1,6 @@
 package se.java.security.models;
 
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,13 +16,13 @@ public class User {
     @NotEmpty(message = "Username cannot be empty")
     private String username;
 
-
-    @Pattern(
+    // moved to RegisterRequest since that is where the password needs validation
+    /* @Pattern(
             regexp = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()\\-_=+{};:,<.>])(?=.{8,})" +
                     ".*$",
             message = "Password must be at least 8 characters long and contain at least " +
                     "one uppercase letter, one number, and one special character"
-    )
+    ) */
     private String password;
 
     private Set<Role> roles;

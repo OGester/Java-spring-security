@@ -50,10 +50,10 @@ public class SecurityConfig {
                 // URL rules based on endpoints
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/products/**").hasRole("ADMIN")
                         .requestMatchers("/cache-stats/**").hasRole("ADMIN")
                         .requestMatchers("/cache/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/products/**").hasAnyRole("USER","ADMIN")
                         .requestMatchers("/orders/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         // any other requests the user need to be logged
