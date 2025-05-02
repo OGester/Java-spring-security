@@ -1,6 +1,6 @@
 # Spring JWT Authentication API
 
-This project is a RESTful API built with Spring Boot that provides user authentication using JSON Web Tokens (JWT). It includes basic user registration and login functionality, secure endpoint access, and MongoDB integration for storing user data.
+This project is a RESTful API built with Spring Boot that provides user authentication using JSON Web Tokens (JWT). Secure and robust user registration and login functionality, secure endpoint access, and MongoDB integration for storing user data.
 
 ## Features
 
